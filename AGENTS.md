@@ -1,39 +1,55 @@
-# AGENTS.md — lief-ai-standards
+# AGENTS.md
 
-AI 编码通用规范（适用于 Claude Code / Cursor / Copilot / Codex / Cline）
+> 跨 AI 工具统一行为规范（Claude Code / Cursor / GitHub Copilot / Codex / Windsurf 通用）
+> 基于 [AGENTS.md 社区标准](https://github.com/agentsmd/agents.md)（Linux Foundation · 22k★）
 
----
+## 覆盖工具
 
-## 核心原则
+| 工具 | 读取文件 | 优先级 |
+|---|---|---|
+| Claude Code | `CLAUDE.md` > `AGENTS.md` | 高 |
+| Cursor | `.cursorrules` > `AGENTS.md` | 高 |
+| GitHub Copilot | `.github/copilot-instructions.md` > `AGENTS.md` | 高 |
+| OpenAI Codex | `AGENTS.md` | 原生 |
+| Windsurf | `AGENTS.md` | 高 |
 
-- **最少代码**：只写解决当前问题所需的代码，不加「以后可能用到」的功能
-- **可验证目标**：把任务转成可验证的成功标准，做完自行验证
-- **简单优先**：三处相似才考虑抽象；有既有模式就用，不造重复轮子
-- **无多余注释**：只在 WHY 非显而易见时加注释；不注释 WHAT（代码本身就是说明）
-- **安全边界**：只在系统边界处做输入校验，信任内部框架保证
+## 核心行为规范
 
-## 代码质量规则
+### 代码质量
+- 只写解决当前问题的最少代码，不加「以后可能会用」的功能（YAGNI）
+- 三处相似代码才考虑抽象，不过早抽象
+- 默认写不含注释的代码；只有 WHY 非显而易见时才加注释
+- 不写描述 WHAT 的注释（代码本身已说明）
 
-- 函数只做一件事，名字能说清楚做什么
-- 错误必须被处理或向上抛出，不能静默吞掉
-- 变量名语义明确，不用 `data` / `tmp` / `x` 这类无意义名字
-- 避免魔法数字，用命名常量
+### 安全优先
+- 不在代码中硬编码 API key、密码、token
+- 所有外部输入必须验证（SQL 参数化、HTML 转义、路径过滤）
+- 不引入不必要的外部依赖
+- 敏感信息走环境变量，不走代码文件
 
-## 文件与目录
+### 错误处理
+- 只在系统边界（用户输入、外部 API）处验证和处理错误
+- 不为不可能发生的情况写 fallback
+- 错误消息对终端用户安全（不泄漏内部路径/堆栈）
 
-- 新文件放到合理的目录，不堆在根目录
-- 模块职责单一，避免「utils.py 装所有东西」
-- 测试文件与源文件同级或放 tests/ 目录
+### 沟通规范
+- 完成任务后简短说明做了什么和为什么
+- 遇到模糊需求先澄清再动手，不带假设往前冲
+- 发现副作用（波及其他文件/系统）主动告知
 
-## Git
+## 语言规范
 
-- commit message：`类型: 一句话说做了什么`（feat/fix/refactor/docs/chore）
-- 不提交无关文件（.env / node_modules / __pycache__ 等）
-- 每个 commit 只做一件事
+各语言详细规范见 `rules/` 目录：
+- `rules/python.md` — Google Python Style Guide
+- `rules/javascript.md` — Airbnb JavaScript Style Guide
+- `rules/typescript.md` — Google TypeScript Style Guide
+- `rules/go.md` — Google Go Style Guide
+- `rules/java.md` — Google Java Style Guide
+- `rules/cpp.md` — Google C++ Style Guide
+- `rules/shell.md` — Google Shell Style Guide
 
-## 禁止事项
+## 参考来源
 
-- 不硬编码密钥或密码
-- 不在生产代码里留 TODO / FIXME（要么修，要么建 issue）
-- 不写「以后再优化」的占位函数
-- 不忽略类型警告和 lint 错误
+- [agentsmd/agents.md](https://github.com/agentsmd/agents.md) — Linux Foundation 跨工具 AI 编程标准
+- [awesome-cursorrules](https://github.com/PatrickJS/awesome-cursorrules) — 40k★ 各语言 Cursor 规范集合
+- [Anthropic claude-cookbooks](https://github.com/anthropics/claude-cookbooks) — 46k★ Anthropic 官方示例
