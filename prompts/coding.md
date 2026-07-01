@@ -1,75 +1,85 @@
-# Coding Prompt 模板集
+# AI 编码 Prompt 模板
 
-## 1. 新功能开发
+> 来源：整合自 [Anthropic claude-cookbooks](https://github.com/anthropics/claude-cookbooks)（46k★）和 [awesome-cursorrules](https://github.com/PatrickJS/awesome-cursorrules)（40k★）
 
-```
-实现 [功能名称]。
-
-要求：
-- [具体需求 1]
-- [具体需求 2]
-
-约束：
-- 只改 [目标文件/目录]，不动其他文件
-- 最多新建 N 个文件
-- 遵循 AGENTS.md 编码规范
-
-完成后：
-- 写简单测试验证主流程
-- 说明改了哪些文件、为什么这么改
-```
-
-## 2. Bug 修复
+## 通用编码 Prompt（放进 CLAUDE.md / AGENTS.md）
 
 ```
-修复 [问题描述]。
+You are an expert software engineer. Follow these principles:
 
-复现步骤：
-1. [步骤 1]
-2. [步骤 2]
-
-预期行为：[应该是什么]
-实际行为：[目前是什么]
-
-只修这个 bug，不顺带重构其他代码。
+1. Write minimal code: Only implement what's needed for the current task. No speculative features.
+2. No unnecessary comments: Only add comments when the WHY is non-obvious.
+3. Security first: Never hardcode credentials. Validate all external input. Use parameterized queries.
+4. Error handling at boundaries: Only validate at system boundaries (user input, external APIs).
+5. Follow existing patterns: Before adding new patterns, check if the codebase already has a solution.
+6. YAGNI: Three similar instances before abstracting. Don't abstract prematurely.
+7. Test your output: Verify the code works before presenting it.
 ```
 
-## 3. 代码审查
+## Python 专用 Prompt
 
 ```
-审查以下代码，重点检查：
-- 有没有安全漏洞（SQL 注入 / XSS / 硬编码密钥等）
-- 有没有逻辑错误或边界条件遗漏
-- 有没有性能问题
-
-输出格式：
-- P0（必须修）：...
-- P1（建议修）：...
-- P2（可选优化）：...
-
-不要只列问题，每条给出修复建议。
+When writing Python:
+- Follow Google Python Style Guide (https://google.github.io/styleguide/pyguide.html)
+- Use type hints for public APIs and complex functions
+- Format: 4-space indent, 80-char line limit; use black for formatting
+- Imports: future → stdlib → third-party → local, each group alphabetically sorted
+- Prefer f-strings for formatting; use .join() for string concatenation in loops
+- Keep functions under 40 lines; single responsibility
+- Use context managers (with) for resource management
+- Catch specific exceptions, not bare except:
 ```
 
-## 4. 重构
+## TypeScript/JavaScript 专用 Prompt
 
 ```
-重构 [文件/模块]，目标：[重构目的，如：提高可读性 / 减少重复 / 拆分过大函数]
-
-约束：
-- 不改变外部行为（所有测试必须继续通过）
-- 不加新功能
-- 改完后说明做了什么简化
+When writing TypeScript/JavaScript:
+- Follow Google TypeScript Style Guide for TS, Airbnb Style Guide for JS
+- Always use const by default; let only when reassignment needed; never var
+- Use named exports only; no default exports
+- Use interface for object shapes (not type); avoid any (use unknown)
+- Arrow functions for callbacks; function declarations for top-level functions
+- Strict equality: always === and !==
+- Async/await over Promise chains for readability
+- Bundle size: prefer tree-shakeable imports (import { fn } from 'lib')
 ```
 
-## 5. 写测试
+## 代码审查 Prompt
 
 ```
-为 [函数/模块] 写单元测试。
+Review this code for:
+1. Security vulnerabilities: SQL injection, XSS, command injection, path traversal, exposed secrets
+2. Logic errors: Off-by-one, null pointer dereferences, race conditions
+3. Performance issues: N+1 queries, unnecessary allocations, blocking operations
+4. Maintainability: Over-complex logic, missing edge cases, confusing naming
 
-要覆盖：
-- 正常流程（happy path）
-- 边界条件（空输入 / 最大值 / 特殊字符）
-- 错误场景（无效输入 / 外部调用失败）
+For each issue found:
+- Severity: P0 (security/crash) / P1 (bug) / P2 (quality)
+- Location: file:line
+- Problem: one sentence
+- Fix: concrete suggestion
+```
 
-Mock 所有外部依赖（API / DB / 文件系统）。
+## 调试 Prompt
+
+```
+Debug this issue systematically:
+1. State your hypothesis about the root cause
+2. Identify what evidence would confirm or refute it
+3. Show me what to check (logs, variable values, network requests)
+4. Don't guess — reason from evidence
+5. When you find the root cause, explain WHY it happened, not just WHAT happened
+```
+
+## 新功能设计 Prompt
+
+```
+Before implementing, answer:
+1. What is the minimal version that satisfies the requirement?
+2. What existing code can be reused?
+3. What are the edge cases?
+4. What could go wrong?
+5. How will we know it works?
+
+Then implement the minimal version. Note any assumptions you made.
 ```
